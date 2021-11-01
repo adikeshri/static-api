@@ -1,21 +1,7 @@
 from typing import List
-
-
-class RepoDetails:
-    def __init__(self, **kwargs):
-
-        self.id = kwargs["id"]
+from dataclasses  import  dataclass
+@dataclass
 class GetReposResponse:
-    def __init__(self, repoDetails:List[RepoDetails]):
-        self.repoDetails: List[RepoDetails] = repoDetails
-
-
-
-
-
-
-
-
-
-
-
+    id: int
+    name: str
+    stargazers_count: int

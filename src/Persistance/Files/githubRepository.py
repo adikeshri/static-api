@@ -1,19 +1,23 @@
 import os
 import json
+import sys; import os;from pathlib import Path
 
-from Application.Abstraction.IGithubRepository import IGithubFiles
+
+
+path_root = Path(os.path.realpath('__file__')).parents[2]
+sys.path.append(str(path_root))
+from Application.Abstraction.IGithubFiles import IGithubFiles
 
 
 class GithubFiles(IGithubFiles):
     def __init__(self):
 
         dirname = os.path.dirname(__file__)
-        self._reposDataFile = os.path.join(dirname, '../Data/githubRepos')
+        self._reposDataFile = "../../Data/githubRepos.json"
         with open(self._reposDataFile, "r") as f:
             self._githubRepos = json.load(f)
 
-        self._contributorsDataFile = os.path.join(
-            dirname, '../Data/githubContributors')
+        self._contributorsDataFile = "../../Data/githubContributors.json"
         with open(self._contributorsDataFile, "r") as f:
             self._githubContributors = json.load(f)
 

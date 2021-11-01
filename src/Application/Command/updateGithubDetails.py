@@ -1,21 +1,34 @@
 import asyncio
+
+import sys; import os;from pathlib import Path
+
+
+
+path_root = Path(os.path.realpath('__file__')).parents[2]
+sys.path.append(str(path_root))
 from Application.Abstraction.IGithubFiles import IGithubFiles
 from Application.Abstraction.IGithubService import IGithubService
 
 
 class UpdateGithubDetails:
     def __init__(self, githubService: IGithubService,
-                 githubRepository: IGithubFiles):
+                 githubFiles: IGithubFiles):
         self._githubService = githubService
-        self._githubRepository = githubRepository
+        self._githubFiles = githubFiles
 
     def updateGithubDetails(self):
         contributors, repos = asyncio.gather(
             self._githubService.getContributorsOnRepo(),
             self._githubService.getRepos())
-    def updateRepos(self):
+    async def updateRepos(self):
 
         try:
-            resp=self._githubService.getRepos()
+            resp=await self._githubService.getRepos()
+
+            return resp
+
+        except Exception as  e:
+
+            raise Exception(e)
 
 
