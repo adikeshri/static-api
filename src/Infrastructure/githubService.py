@@ -1,60 +1,41 @@
+from typing import Any
 import requests
 import json
-
-import sys, traceback
-
+from Application.Abstraction.IGithubService import IGithubService
 from Domain.Exceptions.APICallFailed import APICallFailed
 
-import asyncio
 
-
-class GithubService:
+class GithubService(IGithubService):
     def __init__(self):
-        self.hostUrl = "https://api.github.com"
-        self.endPoints = {
+        self._hostUrl = "https://api.github.com"
+        self._endPoints = {
             "repos": "/users/techhub-community/repos",
             "contributors": "/repos/techhub-community/{repoName}/contributors"
         }
 
     async def getRepos(self):
         try:
-
-            response = await self.__callGetAPI(self.hostUrl +
-                                               self.endPoints["repos"])
-
-
-
+            response = await self.__callGetAPI(self._hostUrl +
+                                               self._endPoints["repos"])
             return response
+        except Exception as e:
+            raise Exception(e)
 
-        except (Exception):
-            raise Exception(Exception.message)
-
-    async def getContributorsForRepo(self, repoName):
-
+    async def getContributorsOnRepo(self, repoName):
         try:
-
-            response = await self.__callGetAPI(
-                self.hostUrl +
-                self.endpoints["contributors"].replace("{repoName}", repoName))
-
+            response = await self.__callGetAPI(self._hostUrl +
+                                               self._endPoints["contributors"].
+                                               replace("{repoName}", repoName))
             return response
+        except Exception as e:
+            raise Exception(e)
 
-        except(Exception):
-
-            raise Exception(Exception.message)
-
-    async def __callGetAPI(url, headers={}):
-
+    async def __callGetAPI(self, url, headers={}) -> Any:
         try:
-
             response = await requests.get(url, headers=headers)
             if response.status_code != 200:
                 raise APICallFailed(response.status_code)
-
             jsonResponse = json.loads(response.text)
-
             return jsonResponse
-
         except:
-
             raise Exception("Exception occured when parsing json response")
