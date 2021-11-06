@@ -1,8 +1,11 @@
 import asyncio
 
-import sys; import os;from pathlib import Path
+import sys
+import os
+from pathlib import Path
+from Domain.Aggregates.updateReposAggregate import UpdateReposAggregate
 
-
+from Infrastructure.Models.getReposResponse import GetReposResponse
 
 path_root = Path(os.path.realpath('__file__')).parents[2]
 sys.path.append(str(path_root))
@@ -20,15 +23,20 @@ class UpdateGithubDetails:
         contributors, repos = asyncio.gather(
             self._githubService.getContributorsOnRepo(),
             self._githubService.getRepos())
+
     async def updateRepos(self):
 
         try:
-            resp=await self._githubService.getRepos()
+            resp: GetReposResponse = await self._githubService.getRepos()
+
+            aggregatedReponse = UpdateReposAggregate(resp).reposItemObject
+
+            print(aggregatedReponse)
+
+            await self._githubFiles.injectIntoReposDB(aggregatedReponse)
 
             return resp
 
-        except Exception as  e:
+        except Exception as e:
 
             raise Exception(e)
-
-

@@ -1,8 +1,10 @@
 import os
 import json
-import sys; import os;from pathlib import Path
+import sys
+import os
+from pathlib import Path
 
-
+import dataclasses
 
 path_root = Path(os.path.realpath('__file__')).parents[2]
 sys.path.append(str(path_root))
@@ -38,10 +40,7 @@ class GithubFiles(IGithubFiles):
         return self._githubContributors
 
     async def injectIntoReposDB(self, data):
-        self._githubRepos = {
-            "repoCount": data["projects"],
-            "totalStars": data["stars"]
-        }
+        self._githubRepos = data
 
         await self.__updateDB("repos")
 
@@ -53,12 +52,24 @@ class GithubFiles(IGithubFiles):
     async def __updateDB(self, dbName):
         fileName = self.DatabaseFiles[dbName]
 
-        data = self.Databases[dbName]
+        data = None
+
+        if dbName == "repos":
+
+
+
+            print(self._githubRepos)
+            data = self._githubRepos
+
+        else:
+
+            data = self._githubContributors
 
         try:
             with open(fileName, "w") as f:
-                await json.dump(data, f, indent=2)
+                json.dump(dataclasses.asdict  (data), f, indent=2)
 
-        except:
+        except Exception as e:
 
+            print(e)
             raise Exception("Failed to write to DB")
